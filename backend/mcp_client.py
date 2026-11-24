@@ -1,14 +1,21 @@
 """Actual subprocess MCP negotiation, discovery and tool calls; no direct-call substitute."""
 import asyncio,json,sys,os,time
 from pathlib import Path
-from . import store
-from .mcp_server import PROTOCOL
-ROOT=Path(__file__).resolve().parent.parent
+try:
+    from . import store
+    from .mcp_server import PROTOCOL
+except (ImportError, ValueError):
+    import store
+    from mcp_server import PROTOCOL
+
+BACKEND_DIR=Path(__file__).resolve().parent
+PROJECT_ROOT=BACKEND_DIR.parent
+SERVER_SCRIPT=str(BACKEND_DIR / 'mcp_server.py')
 class MCPClient:
     def __init__(self,kind):self.kind=kind;self.proc=None;self.counter=0;self.tools=[]
     async def __aenter__(self):
         try:
-            self.proc=await asyncio.create_subprocess_exec(sys.executable,'-m','backend.mcp_server',self.kind,stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.DEVNULL,cwd=str(ROOT),env={**os.environ,'IMPACTIQ_DB':str(store.DB_PATH)},limit=1024*1024)
+            self.proc=await asyncio.create_subprocess_exec(sys.executable,SERVER_SCRIPT,self.kind,stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.DEVNULL,cwd=str(BACKEND_DIR),env={**os.environ,'IMPACTIQ_DB':str(store.DB_PATH),'PYTHONPATH':f"{BACKEND_DIR}{os.pathsep}{PROJECT_ROOT}"},limit=1024*1024)
             result=await self.rpc('initialize',{'protocolVersion':PROTOCOL,'capabilities':{},'clientInfo':{'name':'ImpactIQ','version':'1.0.0'}})
             if result['protocolVersion']!=PROTOCOL:raise RuntimeError('Unsupported negotiated MCP version')
             await self.send({'jsonrpc':'2.0','method':'notifications/initialized'})

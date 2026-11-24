@@ -8,10 +8,16 @@ from fastapi.responses import JSONResponse,StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel,Field,ConfigDict,field_validator
-from . import store
-from .engine import evaluate,now,uid,dt
-from .mcp_client import collect
-from .mcp_server import TOOLS
+try:
+    from . import store
+    from .engine import evaluate,now,uid,dt
+    from .mcp_client import collect
+    from .mcp_server import TOOLS
+except (ImportError, ValueError):
+    import store
+    from engine import evaluate,now,uid,dt
+    from mcp_client import collect
+    from mcp_server import TOOLS
 
 class Strict(BaseModel):model_config=ConfigDict(extra='forbid')
 class Override(Strict):
@@ -41,7 +47,8 @@ class AgentInput(BaseModel):
 async def lifespan(app):
     store.init();yield
 app=FastAPI(title='ImpactIQ Demo API',version='1.0.0',lifespan=lifespan)
-app.add_middleware(CORSMiddleware,allow_origins=os.getenv('IMPACTIQ_ALLOWED_ORIGINS','http://localhost:3000,http://127.0.0.1:3000').split(','),allow_methods=['GET','POST','OPTIONS'],allow_headers=['Content-Type','Accept'],allow_credentials=False)
+default_origins = '*' if os.getenv('VERCEL') else 'http://localhost:3000,http://127.0.0.1:3000'
+app.add_middleware(CORSMiddleware,allow_origins=os.getenv('IMPACTIQ_ALLOWED_ORIGINS',default_origins).split(','),allow_methods=['GET','POST','OPTIONS'],allow_headers=['Content-Type','Accept'],allow_credentials=False)
 @app.exception_handler(store.DomainError)
 async def domain_error(req,exc):return JSONResponse(status_code=exc.status,content={'code':exc.code,'message':exc.message,'requestId':uid('REQ')})
 @app.exception_handler(RequestValidationError)

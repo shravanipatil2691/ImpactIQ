@@ -2,10 +2,14 @@
 import json, os, sqlite3
 from contextlib import contextmanager
 from pathlib import Path
-from .engine import now, uid
+try:
+    from .engine import now, uid
+except (ImportError, ValueError):
+    from engine import now, uid
 
 ROOT=Path(__file__).resolve().parent
-DB_PATH=Path(os.environ.get('IMPACTIQ_DB',str(ROOT/'data'/'impactiq.sqlite3'))).resolve()
+DEFAULT_DB_DIR = Path('/tmp') if os.environ.get('VERCEL') else (ROOT / 'data')
+DB_PATH=Path(os.environ.get('IMPACTIQ_DB',str(DEFAULT_DB_DIR / 'impactiq.sqlite3'))).resolve()
 SEEDS=json.loads((ROOT/'fixtures.json').read_text(encoding='utf-8'))
 class DomainError(Exception):
     def __init__(self,code,message,status=409): self.code=code;self.message=message;self.status=status;super().__init__(message)
@@ -91,7 +95,10 @@ def approval(body):
         c.execute('INSERT INTO certificates VALUES (?,?,?)',(cert['id'],cert['scenarioId'],dumps(cert)));audit(c,'approved' if body['action']=='approve' else 'rejected',cert['scenarioId'],f"{plan['title']} reviewed.",sim['id'],cert['id'],{'exposureBeforeMinor':cert['exposureBeforeMinor'],'exposureAfterMinor':cert['exposureAfterMinor'],'sourceDataVersion':cert['sourceDataVersion']});return cert
 
 def execute(body):
-    from .engine import evaluate
+    try:
+        from .engine import evaluate
+    except (ImportError, ValueError):
+        from engine import evaluate
     with connect(True) as c:
         duplicate=c.execute('SELECT certificate_id,body FROM executions WHERE key=?',(body['idempotencyKey'],)).fetchone()
         if duplicate:

@@ -3,7 +3,10 @@ Run independently: python -m backend.mcp_server inventory|service|rental
 Messages are newline-delimited JSON-RPC 2.0 (stdout reserved for protocol).
 """
 import sys,json
-from . import store
+try:
+    from . import store
+except (ImportError, ValueError):
+    import store
 PROTOCOL='2025-06-18'
 TOOLS={
  'inventory':{'get_inventory':'Read all part records','get_pending_transfers':'Read pending inventory decisions','find_alternative_stock':'Find free stock at each branch','validate_stock_allocation':'Read inventory availability constraints'},
