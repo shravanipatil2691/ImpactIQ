@@ -1,0 +1,363 @@
+[
+  {
+    "id": "SCN-001",
+    "name": "Single Parts Transfer",
+    "description": "Validate a proposed North-to-Central transfer against repair reservations.",
+    "revision": 1,
+    "sourceDataVersion": "ERP-SNAP-2026-11-24.04",
+    "referenceTime": "2026-11-24T16:00:00.000Z",
+    "currency": "USD",
+    "decisions": [
+      {
+        "id": "D-091",
+        "scenarioId": "SCN-001",
+        "department": "Inventory",
+        "actionType": "transfer",
+        "title": "Transfer five HP-220 pumps",
+        "description": "Move all five physical units from North to Central.",
+        "origin": "Employee",
+        "proposedBy": "Jordan Lee",
+        "resourceId": "PART-HP220",
+        "sourceBranchId": "BR-NORTH",
+        "targetBranchId": "BR-CENTRAL",
+        "quantity": 5,
+        "requiredAt": "2026-11-25T16:00:00.000Z",
+        "priority": "normal",
+        "status": "pending"
+      }
+    ],
+    "resources": [
+      {
+        "id": "PART-HP220",
+        "name": "Hydraulic Pump HP-220",
+        "resourceType": "part",
+        "branchId": "BR-NORTH",
+        "availableQuantity": 5,
+        "committedQuantity": 2,
+        "attributes": {
+          "unitCostMinor": 185000
+        },
+        "version": "INV-8841"
+      },
+      {
+        "id": "PART-HP220-WEST",
+        "name": "Hydraulic Pump HP-220",
+        "resourceType": "part",
+        "branchId": "BR-WEST",
+        "availableQuantity": 5,
+        "committedQuantity": 2,
+        "attributes": {
+          "unitCostMinor": 185000
+        },
+        "version": "INV-8810"
+      }
+    ],
+    "commitments": [
+      {
+        "id": "CM-091",
+        "customerName": "Northstar Earthworks",
+        "commitmentType": "Scheduled repair",
+        "department": "Service",
+        "resourceIds": [
+          "PART-HP220"
+        ],
+        "relatedDecisionIds": [
+          "D-091"
+        ],
+        "requiredQuantity": 2,
+        "dueAt": "2026-11-25T18:00:00.000Z",
+        "currentStatus": "confirmed",
+        "revenueAtRiskMinor": 860000,
+        "currency": "USD"
+      }
+    ]
+  },
+  {
+    "id": "SCN-002",
+    "name": "Combined Pending Decisions",
+    "description": "Three individually feasible requests compete for ten North-branch pumps.",
+    "revision": 7,
+    "sourceDataVersion": "ERP-SNAP-2026-11-24.07",
+    "referenceTime": "2026-11-24T16:00:00.000Z",
+    "currency": "USD",
+    "decisions": [
+      {
+        "id": "D-101",
+        "scenarioId": "SCN-002",
+        "department": "Inventory",
+        "actionType": "transfer",
+        "title": "Transfer parts to Central",
+        "description": "Transfer four pumps to replenish Central inventory.",
+        "origin": "Employee",
+        "proposedBy": "Maya Chen",
+        "resourceId": "PART-HP220",
+        "sourceBranchId": "BR-NORTH",
+        "targetBranchId": "BR-CENTRAL",
+        "quantity": 4,
+        "requiredAt": "2026-11-25T16:00:00.000Z",
+        "priority": "normal",
+        "status": "pending"
+      },
+      {
+        "id": "D-102",
+        "scenarioId": "SCN-002",
+        "department": "Service",
+        "actionType": "repair_allocation",
+        "title": "Allocate to customer repairs",
+        "description": "Reserve four pumps for confirmed repair work.",
+        "origin": "Employee",
+        "proposedBy": "Elena Ruiz",
+        "resourceId": "PART-HP220",
+        "sourceBranchId": "BR-NORTH",
+        "quantity": 4,
+        "requiredAt": "2026-11-25T12:00:00.000Z",
+        "priority": "critical",
+        "status": "pending"
+      },
+      {
+        "id": "D-103",
+        "scenarioId": "SCN-002",
+        "department": "Rental",
+        "actionType": "fleet_maintenance",
+        "title": "Prepare rental fleet",
+        "description": "Allocate three pumps to fleet maintenance.",
+        "origin": "AI Agent",
+        "proposedBy": "Rental Planning Agent",
+        "resourceId": "PART-HP220",
+        "sourceBranchId": "BR-NORTH",
+        "quantity": 3,
+        "requiredAt": "2026-11-26T12:00:00.000Z",
+        "priority": "high",
+        "status": "pending"
+      }
+    ],
+    "resources": [
+      {
+        "id": "PART-HP220",
+        "name": "Hydraulic Pump HP-220",
+        "resourceType": "part",
+        "branchId": "BR-NORTH",
+        "availableQuantity": 10,
+        "committedQuantity": 0,
+        "attributes": {
+          "unitCostMinor": 185000
+        },
+        "version": "INV-8842"
+      },
+      {
+        "id": "PART-HP220-WEST",
+        "name": "Hydraulic Pump HP-220",
+        "resourceType": "part",
+        "branchId": "BR-WEST",
+        "availableQuantity": 5,
+        "committedQuantity": 2,
+        "attributes": {
+          "unitCostMinor": 185000
+        },
+        "version": "INV-8811"
+      }
+    ],
+    "commitments": [
+      {
+        "id": "CM-101",
+        "customerName": "Northstar Earthworks",
+        "commitmentType": "Scheduled repairs",
+        "department": "Service",
+        "resourceIds": [
+          "PART-HP220"
+        ],
+        "relatedDecisionIds": [
+          "D-102"
+        ],
+        "requiredQuantity": 2,
+        "dueAt": "2026-11-25T12:00:00.000Z",
+        "currentStatus": "confirmed",
+        "revenueAtRiskMinor": 1280000,
+        "currency": "USD"
+      },
+      {
+        "id": "CM-102",
+        "customerName": "Canyon Ridge Utilities",
+        "commitmentType": "Additional repair work",
+        "department": "Service",
+        "resourceIds": [
+          "PART-HP220"
+        ],
+        "relatedDecisionIds": [
+          "D-102"
+        ],
+        "requiredQuantity": 2,
+        "dueAt": "2026-11-25T18:00:00.000Z",
+        "currentStatus": "confirmed",
+        "revenueAtRiskMinor": 720000,
+        "currency": "USD"
+      },
+      {
+        "id": "CM-103",
+        "customerName": "Meridian Rental Fleet",
+        "commitmentType": "Fleet preparation",
+        "department": "Rental",
+        "resourceIds": [
+          "PART-HP220"
+        ],
+        "relatedDecisionIds": [
+          "D-103"
+        ],
+        "requiredQuantity": 3,
+        "dueAt": "2026-11-26T12:00:00.000Z",
+        "currentStatus": "confirmed",
+        "revenueAtRiskMinor": 1450000,
+        "currency": "USD"
+      },
+      {
+        "id": "CM-104",
+        "customerName": "Central Branch urgent service",
+        "commitmentType": "Urgent service requirement",
+        "department": "Service",
+        "resourceIds": [
+          "PART-HP220"
+        ],
+        "relatedDecisionIds": [
+          "D-101"
+        ],
+        "requiredQuantity": 4,
+        "dueAt": "2026-11-25T16:00:00.000Z",
+        "currentStatus": "confirmed",
+        "revenueAtRiskMinor": 940000,
+        "currency": "USD"
+      }
+    ]
+  },
+  {
+    "id": "SCN-003",
+    "name": "Equipment Allocation Conflict",
+    "description": "Coordinate sale, maintenance and rental commitments for an excavator.",
+    "revision": 3,
+    "sourceDataVersion": "ERP-SNAP-2026-11-24.03",
+    "referenceTime": "2026-11-24T16:00:00.000Z",
+    "currency": "USD",
+    "decisions": [
+      {
+        "id": "D-201",
+        "scenarioId": "SCN-003",
+        "department": "Sales",
+        "actionType": "sale_hold",
+        "title": "Prepare EQ-101 for sale",
+        "description": "Customer handover scheduled Friday.",
+        "origin": "Employee",
+        "proposedBy": "Nina Patel",
+        "resourceId": "EQ-101",
+        "sourceBranchId": "BR-CENTRAL",
+        "quantity": 1,
+        "requiredAt": "2026-11-27T15:00:00.000Z",
+        "priority": "high",
+        "status": "pending",
+        "startAt": "2026-11-27T15:00:00Z",
+        "endAt": "2026-12-31T00:00:00Z"
+      },
+      {
+        "id": "D-202",
+        "scenarioId": "SCN-003",
+        "department": "Service",
+        "actionType": "maintenance",
+        "title": "Complete scheduled maintenance",
+        "description": "Maintenance window Thursday through Friday.",
+        "origin": "Employee",
+        "proposedBy": "Sam Brooks",
+        "resourceId": "EQ-101",
+        "sourceBranchId": "BR-CENTRAL",
+        "quantity": 1,
+        "requiredAt": "2026-11-27T15:00:00.000Z",
+        "priority": "critical",
+        "status": "pending",
+        "startAt": "2026-11-26T08:00:00Z",
+        "endAt": "2026-11-27T15:00:00Z"
+      },
+      {
+        "id": "D-203",
+        "scenarioId": "SCN-003",
+        "department": "Rental",
+        "actionType": "rental",
+        "title": "Reserve equipment for rental",
+        "description": "Rental starts Friday morning.",
+        "origin": "AI Agent",
+        "proposedBy": "Rental Planning Agent",
+        "resourceId": "EQ-101",
+        "sourceBranchId": "BR-CENTRAL",
+        "quantity": 1,
+        "requiredAt": "2026-11-27T08:00:00.000Z",
+        "priority": "high",
+        "status": "pending",
+        "startAt": "2026-11-27T08:00:00Z",
+        "endAt": "2026-11-30T08:00:00Z"
+      }
+    ],
+    "resources": [
+      {
+        "id": "EQ-101",
+        "name": "Excavator 320 GC",
+        "resourceType": "equipment",
+        "branchId": "BR-CENTRAL",
+        "availableQuantity": 1,
+        "committedQuantity": 0,
+        "attributes": {
+          "ready": false,
+          "replacementId": "EQ-102",
+          "saleValueMinor": 18400000,
+          "rentalDayMinor": 145000
+        },
+        "version": "FLEET-1102"
+      },
+      {
+        "id": "EQ-102",
+        "name": "Excavator 320 GC · backup",
+        "resourceType": "equipment",
+        "branchId": "BR-WEST",
+        "availableQuantity": 1,
+        "committedQuantity": 0,
+        "attributes": {
+          "ready": true,
+          "compatible": true,
+          "transferHours": 6
+        },
+        "version": "FLEET-1094"
+      }
+    ],
+    "commitments": [
+      {
+        "id": "CM-201",
+        "customerName": "Pioneer Civil Group",
+        "commitmentType": "Sale handover",
+        "department": "Sales",
+        "resourceIds": [
+          "EQ-101"
+        ],
+        "relatedDecisionIds": [
+          "D-201"
+        ],
+        "requiredQuantity": 1,
+        "dueAt": "2026-11-27T15:00:00.000Z",
+        "currentStatus": "confirmed",
+        "revenueAtRiskMinor": 18400000,
+        "currency": "USD"
+      },
+      {
+        "id": "CM-202",
+        "customerName": "Granite Peak Contracting",
+        "commitmentType": "Rental reservation",
+        "department": "Rental",
+        "resourceIds": [
+          "EQ-101"
+        ],
+        "relatedDecisionIds": [
+          "D-203"
+        ],
+        "requiredQuantity": 1,
+        "dueAt": "2026-11-27T08:00:00.000Z",
+        "currentStatus": "confirmed",
+        "revenueAtRiskMinor": 610000,
+        "currency": "USD"
+      }
+    ]
+  }
+]
